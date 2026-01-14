@@ -1,0 +1,68 @@
+module temp;
+  reg a;
+  reg clk = 0;
+  reg rd;
+  reg [7:0] addr;
+ 
+ 
+ 
+  always#5 clk = ~clk;
+  
+  
+  initial begin
+  a = 0;
+  #10;
+  a = 1;
+  #10;
+  a = 0;
+  #10;
+  a = 1;  
+  end
+  
+  
+  initial begin
+  rd = 0;
+  #10;
+  rd = 1;
+  addr = 2;
+  #20;
+  rd = 0;
+  #10;
+  rd = 1;
+  addr = 4;
+  #20;
+  rd = 0;
+  #10;
+  rd = 1;
+  addr = 7;
+  #10;
+  addr = 9;
+  #10;
+  rd = 0;
+  end
+  
+  initial begin
+    #100;
+    $finish;
+  end
+  
+ 
+/*
+////A toggles
+A1: assert property (@(posedge clk) ##1 $changed(a)) $info("Toggle suc at %0t",$time); else
+$error("Toogle failed at %0t",$time);
+*/
+ 
+////A Stable
+A2: assert property (@(posedge clk) ##1 $stable(a)) $info("Stable suc at %0t",$time); else
+$error("Stable failed at %0t",$time); 
+ 
+ 
+ 
+ 
+ /////rd assert , addr is stable for two clock tick
+ 
+ //A3: assert property (@(posedge clk) $rose(rd) |=> $stable(addr)) $info("rd success at %0t",$time);
+ 
+ 
+endmodule

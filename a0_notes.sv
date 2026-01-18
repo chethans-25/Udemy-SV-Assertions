@@ -307,3 +307,14 @@ $countones(variable)
 returns the number of bits of 1 present in variable
 
 
+Sequence Operators
+
+Delays
+Constant delay
+##n
+
+variable delay
+##[min: max]
+
+Unbounded delay
+##[ : $]

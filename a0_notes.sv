@@ -307,14 +307,40 @@ $countones(variable)
 returns the number of bits of 1 present in variable
 
 
-Sequence Operators
+********************Sequence Operators********************
 
 Delays
 Constant delay
 ##n
 
+A1: assert property (@(posedge clk) $rose(req) |=> ##2 $rose(ack)) $info("Suc @ %0t",$time);
+
 variable delay
 ##[min: max]
 
+A1: assert property (@(posedge clk) $rose(req) |-> ##[2:5] $rose(ack)) $info("Suc @ %0t",$time);
+
+
 Unbounded delay
 ##[ : $]
+
+A1: assert property (@(posedge clk) $rose(req) |-> ##[0:$] $rose(ack)) $info("Suc @ %0t",$time);
+
+Unbounded delay is weak, it does not print error on the console. Needs infinite sim time for it to consider assertion failure
+
+Strong property: Need to complete before sim end
+Unfinished attempts are considered failire at the end of simulation
+
+Weak property: They do not need to finish
+
+Use strong keyword to explicitly make strong
+A1: assert property (@(posedge clk) $rose(req) |-> strong(##[0:$] $rose(ack))) $info("Suc @ %0t",$time);
+
+********************Repetition Operators********************
+
+consecutive repetition
+[*n]                n >= 0
+[*m:n]             m,n >= 0    //range of repetition
+
+Non consecutive repetition
+[=n]                

@@ -342,5 +342,67 @@ consecutive repetition
 [*n]                n >= 0
 [*m:n]             m,n >= 0    //range of repetition
 
-Non consecutive repetition
-[=n]                
+Non consecutive repetition (weak)
+[=n]
+
+[=m:n]
+
+[->n] goto operator: similar to non consecutive but, in the Immidiate next clock tick, tell expression should match
+
+[->m:n] 
+
+*****************Typical Use cases********************
+
+// If read do not assert before timeout, then system should reset
+
+!read[*1:$] ##1 timeout |-> rst;
+
+
+//  write req must be followed by read req.
+
+$rose(wr) |-> $rose(rd);
+
+
+// If a assert, b must assert with in five clk ticks
+
+a |-> ##[0:4] b;
+
+
+// If reset deasserts, then CE must assert within 1 to 3 clock ticks
+
+$fell(rst) |-> ##[1:3] $rose(CE);
+
+
+// If req assert and ack not received in the 3 clock ticks, then req must re-assert
+$rose(req) ##1 !ack[*3]  |-> $rose(req);
+
+// If a assert, a must remain high for 3 clk ticks
+$rose(a) |-> a[*3];
+
+
+// System operation must start with rst asserted for 3 consecutive clk ticks
+initial A1: assert property (@(posedge clk) rst[*3]);
+
+// CE must assert somewhere during the simulation, if rst deasserts
+$fell(rst) |-> ##[1:$] $rose(CE);
+
+
+// transaction start with CE become high and ends with CE become low. Each transaction must contain atleast one read and write req;
+
+$rose(CE) |-> (rd[->1] and wr[->1])   ##1 $fell(CE);
+
+// If CE assert somewhere after rst deasserts, then  wr req must be high atleast once
+
+$fell(rst) ##[1:$] $rose(CE) |-> wr[->1] ## !wr; // wr must not be high for 2 consecutive clk, so !wr
+
+// a must assert twice during simulation
+a[->2]
+
+a[=2]
+
+// If a become high somewhere, then b must become high in the immediate next clk tick
+$rose(a) |=> $rose(b);
+
+
+// If req is received and all the data is sent to slave indicated by done signal, then ready must be high in the next clk tick.
+$rose(req) ##1 done[->1] |=> ready;

@@ -406,3 +406,64 @@ $rose(a) |=> $rose(b);
 
 // If req is received and all the data is sent to slave indicated by done signal, then ready must be high in the next clk tick.
 $rose(req) ##1 done[->1] |=> ready;
+
+
+*********************Working with Multiple Sequences **********************
+********Boolean Operators
+AND, OR, NOT
+
+s1 and s2; // both sequences should evaluate to true
+both should start at a time, and match. Individual end time can be different 
+
+
+s1 or s2; // either of the sequences should evaluate to true
+both should start at a time, and either of them should match.
+
+
+not(s1); // sequence s1 should not evaluate to true
+
+********Used Cases*************
+
+// Perform atleast one read and write cycle on the DUT after reset is deasserted
+
+sequence s1;
+  wr[*1];
+endsequence
+
+sequence s2;
+  ##1 rd[*2];
+endsequence
+
+
+assert property (@(posedge clk) $fell(reset) |=> s1 or s2);
+
+
+// Read and write cycle should not be performed at the same time
+sequence wrrd;
+  strong(##[0:$] wr && rd);
+endsequence
+
+assert property (@(posedge clk) $fell(reset) |=> not(wrrd));
+
+******** matching Operators
+
+
+throughout() operator
+sig1 throughout s1
+exp1 throughout s1
+useful to test if a signal or an expression is true throughout a sequence
+LHS cannot be another sequence
+eg:
+$fell(a) ##0
+(!a) throughout s1;
+
+within operator
+completion of one sequence within another
+
+intersect operator
+s1 intersect s2
+similar to and operator but Individual end time should match
+
+
+********Used Cases*************
+

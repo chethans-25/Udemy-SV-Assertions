@@ -465,5 +465,28 @@ s1 intersect s2
 similar to and operator but Individual end time should match
 
 
-********Used Cases*************
+*************temporal logic operators *********************
 
+**********eventually
+//weak
+eg: eventually a; //a must go high somewhere in the simulation
+
+**********s_eventually
+//strong 
+
+**********use cases**********
+//CE assert eventually
+s_eventually CE;
+
+// rst must go down within  3 to 10 clk ticks
+s_eventually [3:10] $fell(rst); 
+
+// CE assert eventually and remains high
+s_eventually always CE;
+
+
+// rst deassert eventually and stays low
+s_eventually always !rst;
+
+
+**********nexttime

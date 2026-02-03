@@ -489,4 +489,40 @@ s_eventually always CE;
 s_eventually always !rst;
 
 
-**********nexttime
+**********nexttime and s_nexttime
+
+nexttime [ n ] property_expr
+n represents number of clock ticks
+
+property_expr should evaluate to true after n clk ticks
+
+
+*********until and until_with
+until - non Overlapping
+until_with - Overlapping : signals overlap for one clk
+
+eg: sig1 until sig2
+
+// s_until and s_until_with
+strong versions of until and until_with
+
+
+**********followed by Operators
+#-#   non Overlapping
+#=#   Overlapping
+
+They are duals of implication operators
+
+A  #-# C    is equivalent to 
+not (A |-> not C)
+
+A  #=# C    is equivalent to 
+not (A |=> not C)
+
+In simple words, they are similar to implication operators except for the following point:
+If antecedent fails, assertion fails while using followed by operators, 
+
+whereas for implication operator
+If antecedent fails, assertion passes and it is a vacuous success
+
+

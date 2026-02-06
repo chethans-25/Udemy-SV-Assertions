@@ -526,3 +526,121 @@ whereas for implication operator
 If antecedent fails, assertion passes and it is a vacuous success
 
 
+********************Local Variables*******************
+
+*************Fundamentals
+defined inside a property or sequence block
+Have existence only if an expression given to it.
+
+eg:
+
+property p1;
+  logic i = 0;
+  (start, i++) |-> (done, i++);
+endproperty
+
+******behavior of local variable
+For each independent thread, var will be local to that thread.
+count value will be 1 for the following snippet, it won't increment.
+
+property p1;
+ int count = 0;
+ ($rose(start), count = count++, $display("Value of count: %0d",count));
+endproperty
+
+
+count will be incremented for the following snippet, but only 1 pass will be identified
+
+($rose(start), count = 1) |-> ## [1:$] ($rose(start), count = count + 1) ##[1:$] ($rose(start), count++, $display("Count : %0d", count) ) ; 
+
+
+*********Common Examples*************
+
+*****Boolean Operators
+
+// Both a and b must be high
+assert property ( @(posedge clk) a && b);
+
+// Either a or b should be high
+assert property ( @(posedge clk) a || b);
+
+// One should be high, other should be low
+assert property ( @(posedge clk) a ^ b);
+
+// Both must be low
+assert property ( @(posedge clk) !a && !b);
+
+
+*****Implication Operators
+
+// If antecedent is high, consequent also must be high
+assert property ( @(posedge clk) a |-> c);
+
+// If antecedent is high, consequent also must be low
+assert property ( @(posedge clk) a |-> !c);
+
+
+*****Sequence Operators
+
+*****fixed Delay
+
+// a must be high after 2 clk tick 
+(##2 a)
+
+// if a assert, a must remain high for 2 clk tick
+$rose(a) |=> a[*2];
+//or
+$rose(a) |=> a && $past(a);
+
+// if a assert, b should assert after 4 clk
+$rose(a) |=> ##4 b;
+
+// a followed by b followed by c
+a ##1 b ##1 c;
+
+
+*****Range of Delay (bounded)
+
+// rst should necome low within 4 to 5 clk
+##[4:5] !rst;
+
+// if rst deassert, then ce must assert within 2 to 5 clk
+!rst |-> ##[2:5] ce;
+
+// ack should be granted to the new req within 0 to 1 clk
+req |-> ##[0:1] ack;
+
+*****Range of Delay (unounded)
+// if a assert, b must assert at same clk tick or anytime later during the simulation
+$rose(a) |->  ##[0:$] b;  //weak; use strong keyword if necessary
+
+or
+
+$rose(a) |-> s_eventually b;
+
+// if a assert, b deassert in the next clk tick or somewhere during the simulation.
+$rose(a) |=> ##[0:$] !b;
+or
+$rose(a) |-> ##[1:$] !b;
+or
+$rose(a) |=> s_eventually !b;
+
+
+// rst must go low somewhere during simulation
+##[1:$] !rst;
+or
+(s_eventually !rst);
+
+*******repetition operator
+
+// if rd assert, then it must stay high for 2 clk
+$rose(rd) |-> rd[*2];
+
+// three consecutive wr should be followed by 2 rd req
+wr[*3] |=> rd[*2];
+
+// if rst deassert, then ce must remain high
+$fell(rst) |-> ce[*1:$];
+
+
+***********Projects**************

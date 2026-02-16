@@ -251,7 +251,7 @@ assert property (@(posedge clk) $rose(a) |=> $rose(b));
 // Each new request must be followed by an acknowledgement
 assert property (@(posedge clk) $rose(req) |=> $rose(ack));
 
-// if rst deassert, CR must assert in same clk tick
+// if rst deassert, CE must assert in same clk tick
 assert property (@(posedge clk) $fell(rst) |-> $rose(CE));
 
 // Wr request must be followed by rd request

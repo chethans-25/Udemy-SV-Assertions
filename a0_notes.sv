@@ -644,3 +644,23 @@ $fell(rst) |-> ce[*1:$];
 
 
 ***********Projects**************
+
+
+*************************Understanding Bind**************************
+Write assertion checks in a separate module and bind it with TB
+// refer code194.sv
+
+
+
+
+// Quiz
+
+[+] is equivalent to
+##[1:$]
+
+In SystemVerilog, the "[+]" operator is a shorthand for "##[1:$]", meaning it introduces a delay of at least one clock cycle, but can be more.
+
+
+[*] is equivalent to
+##[0:$]
+

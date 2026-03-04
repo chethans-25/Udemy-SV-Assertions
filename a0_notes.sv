@@ -7,7 +7,7 @@ Implementation in Verilog
 More complex
 
 Implementation in System Verilog
-Simple to implement due 
+Simple to implement  
 
 
 s_eventually
@@ -21,8 +21,7 @@ initial assert property (@(posedge clk) s_eventually start) $display("SVA Suc at
 
 In SVA, there are repetition operators to make things easy
 
-
-assertion statements in Synthesizer
+Above concepts were explained in the introduction part it will come again in the upcoming parts.
 
 **************************************************************
 // SECTION 2: Immediate Assertions
@@ -136,13 +135,13 @@ assume
 cover
 
 
-Assertion for all valid clk edge of only for single edge?
+Assertion for all valid clk edge or only for single edge?
 
 for single edge
-use initial
-use temp variable and keep only one transition and work with that
+Method 1: use initial block
+Method 2: use temp variable and keep only one transition and work with that
 
-for all valid edge, don't use initial
+for all valid edge, don't use initial block, use concurrent assertion with posedge or negedge or edge as per requirement
 
 ****Understanding Clk edges*****
 
@@ -163,7 +162,7 @@ clocking c2
 endclocking
 
 default clocking c2;
-posedge_label: assert property (expression)) <pass_statement>; else <fail_statement>;
+posedge_label: assert property (expression) <pass_statement>; else <fail_statement>;
 
 
 ****Disabling Concurrent assertion ******
@@ -223,7 +222,7 @@ Properties
 ****************System Tasks******************
 
 $sampled(<variable>)
-reporting macros return value of variable at reactive region
+Why not reporting macros? : Reporting macros return value of variable at reactive region.
 $sampled(<variable>) gives value of variable at preponed region
 
 when using concurrent assert, $sampled is not necessary as by default preponed value is returned
@@ -251,13 +250,13 @@ assert property (@(posedge clk) $rose(a) |=> $rose(b));
 // Each new request must be followed by an acknowledgement
 assert property (@(posedge clk) $rose(req) |=> $rose(ack));
 
-// if rst deassert, CR must assert in same clk tick
+// if rst deassert, CE must assert in same clk tick
 assert property (@(posedge clk) $fell(rst) |-> $rose(CE));
 
 // Wr request must be followed by rd request
 assert property (@(posedge clk) $rose(wr) |=> $rose(rd));
 
-// current calue of addr must be one greater than prev value if start assert
+// current value of addr must be one greater than prev value if start assert
 assert property (@(posedge clk) $rose(start) |=> addr == ($past(addr) + 1));
 
 // if rst deassert, dout must be zero
@@ -329,9 +328,9 @@ A1: assert property (@(posedge clk) $rose(req) |-> ##[0:$] $rose(ack)) $info("Su
 Unbounded delay is weak, it does not print error on the console. Needs infinite sim time for it to consider assertion failure
 
 Strong property: Need to complete before sim end
-Unfinished attempts are considered failire at the end of simulation
+Unfinished attempts are considered failure at the end of simulation
 
-Weak property: They do not need to finish
+Weak property: They do not need to finish, unfinished attempts are not considered failure at the end of simulation.
 
 Use strong keyword to explicitly make strong
 A1: assert property (@(posedge clk) $rose(req) |-> strong(##[0:$] $rose(ack))) $info("Suc @ %0t",$time);
@@ -347,7 +346,7 @@ Non consecutive repetition (weak)
 
 [=m:n]
 
-[->n] goto operator: similar to non consecutive but, in the Immidiate next clock tick, tell expression should match
+[->n] goto operator: similar to non consecutive but, in the Immediate next clock tick, tell expression should match
 
 [->m:n] 
 
@@ -422,7 +421,7 @@ both should start at a time, and either of them should match.
 
 not(s1); // sequence s1 should not evaluate to true
 
-********Used Cases*************
+********Use Cases*************
 
 // Perform atleast one read and write cycle on the DUT after reset is deasserted
 
@@ -462,7 +461,7 @@ completion of one sequence within another
 
 intersect operator
 s1 intersect s2
-similar to and operator but Individual end time should match
+similar to 'and' operator but Individual end time should match
 
 
 *************temporal logic operators *********************
@@ -601,7 +600,7 @@ a ##1 b ##1 c;
 
 *****Range of Delay (bounded)
 
-// rst should necome low within 4 to 5 clk
+// rst should become low within 4 to 5 clk
 ##[4:5] !rst;
 
 // if rst deassert, then ce must assert within 2 to 5 clk
@@ -610,7 +609,7 @@ a ##1 b ##1 c;
 // ack should be granted to the new req within 0 to 1 clk
 req |-> ##[0:1] ack;
 
-*****Range of Delay (unounded)
+*****Range of Delay (unbounded)
 // if a assert, b must assert at same clk tick or anytime later during the simulation
 $rose(a) |->  ##[0:$] b;  //weak; use strong keyword if necessary
 
